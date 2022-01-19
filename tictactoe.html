@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+	*{
+		padding: 0;
+		margin: 0;
+		font-family: 'Itim', cursive;
+	}
+	h1, .display{
+		text-align:center;
+		margin-bottom: 50px;
+	}
+	.square{
+		margin: 0 auto;
+		display: grid;
+		grid-template-columns: 33% 33% 33%;
+		grid-template-rows: 33% 33% 33%;
+		max-width: 300px;
+			
+	}
+	.box{
+		border: 1px solid red;
+		min-width: 100px;
+		min-height: 100px;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		font-size: 50px;
+		cursor: pointer;	
+	}
+	.playerX{
+		color: #09C372;
+	}
+	.playerO{
+		color: #498AFB;
+	}
+	.selected.red:after {
+		display: inner-block;
+		content: "X";
+		font-size: 72px;
+		color:red;
+	}
+	.selected.green:after {
+		display: inner-block;
+		content: "O";
+		font-size: 72px;
+		color: green;
+	}
+</style>
+</head>
+<body>
+<h1>
+My first program after 11 months :D
+</h1>
+<div class="display"> Player
+	<span class="display-player playerX" data-player="x" id="turn">X</span>'s turn
+	<h2 style="color: red;visibility:hidden;" id="bannerWinner">Winner is <span id="winner"></span></h2>
+</div>
+<div class="square">
+<div class="box" data-value="1"></div>
+<div class="box" data-value="2"></div>
+<div class="box" data-value="3"></div>
+<div class="box" data-value="4"></div>
+<div class="box" data-value="5"></div>
+<div class="box" data-value="6"></div>
+<div class="box" data-value="7"></div>
+<div class="box" data-value="8"></div>
+<div class="box" data-value="9"></div>
+</div>
+
+<br />
+
+<div style="text-align:center;">
+	<button class="reset">Reset</button>
+</div>
+</body>
+<script>
+const winConditions = [
+	[1,2,3],
+	[4,5,6],
+	[7,8,9],
+	[1,5,9],
+	[3,5,7],
+	[2,5,8],
+	[1,4,7],
+	[3,6,9]
+];
+
+const markXs = [];
+const markOs = [];
+var hasWon = false;
+var turn = document.querySelector('#turn');
+var banner = document.querySelector('#bannerWinner');
+var winner = document.querySelector('#winner');
+
+const checkWins = (marks) => winConditions.some(item => item.every(p => marks.includes(p))); 
+
+const mark = (item) => {
+	console.log(2);
+	let valueN = Number(item.dataset.value);
+	if(turn.dataset.player == "x"){
+		turn.classList.remove('playerX');
+		turn.classList.add('playerO');
+		turn.textContent = 'O';
+		turn.dataset.player = 'o';
+		markXs.push(valueN);
+		if(checkWins(markXs)){
+			banner.style.visibility = 'visible';
+			winner.textContent = 'X Player'
+			hasWon=true;
+		}
+	}else{
+		turn.classList.remove('playerO');
+		turn.classList.add('playerX');
+		turn.textContent = 'X';
+		turn.dataset.player = 'x';
+		markOs.push(valueN);
+		if(checkWins(markOs)){
+			banner.style.visibility = 'visible';
+			winner.textContent = 'O Player'
+			hasWon=true;
+		}
+	}
+	if(markXs.length + markOs.length == 9 && !hasWon) {alert('Draw !');}
+}
+
+var boxes = document.querySelectorAll(".box");
+boxes.forEach((item) => {
+	item.addEventListener("click", () => {
+		if(hasWon) return;
+		if(!item.classList.contains("selected")){
+			console.log(1)
+			item.classList.add('selected');
+			if(turn.dataset.player == 'x'){
+				item.classList.add('red');
+			}else{
+				item.classList.add('green');
+			}
+			mark(item);
+		}
+	})
+})
+
+const clear = () => {
+	markXs.length = 0;
+	markOs.length = 0;
+	var selecteds =	document.querySelectorAll(".selected");
+	selecteds.forEach(selected => {
+		selected.classList.remove("selected", "red", "green");
+	})
+	turn.classList.remove('playerO');
+	turn.classList.add('playerX');
+	turn.textContent = 'X';
+	turn.dataset.player = 'x';
+	banner.style.visibility = "hidden";
+	hasWon = false;
+}
+
+var resetBtn = document.querySelector(".reset");
+resetBtn.addEventListener('click', () => {
+	clear();
+})
+
+</script>
+</html>
